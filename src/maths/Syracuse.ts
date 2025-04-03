@@ -50,5 +50,17 @@ export function evaluateSyracuse(n: number) {
         });
     });
 
-    return new Map([...instances].sort((a, b) => b[1].flyTime - a[1].flyTime));
+    const keys: (keyof { flyTime: number; altFlyTime: number; maxAlt: number })[] = ['flyTime', 'altFlyTime', 'maxAlt'];
+
+    return keys.reduce((acc, key) => {
+        const values = Array.from(instances.values())
+            .map(item => item[key])
+            .filter(value => value !== undefined);
+
+        if (values.length > 0) {
+            acc[key] = MathHelper.calculateStats(values);
+        }
+
+        return acc;
+    }, {} as Record<string, { mean: number; median: number; min: number; max: number }>);
 }
