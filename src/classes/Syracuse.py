@@ -8,9 +8,9 @@ class Method(Enum):
 
 
 class SyracuseSuite:
-    def __init__(self, suite: List[int], initial_value: int):
+    def __init__(self, suite: List[int]):
         self.suite = suite
-        self.initial_value = initial_value
+        self.initial_value = suite[0]
 
     @property
     def fly_time(self) -> int:
@@ -18,8 +18,7 @@ class SyracuseSuite:
 
     @property
     def alt_fly_time(self) -> int:
-        index = next((i for i, val in enumerate(self.suite) if val < self.initial_value), -1)
-        return index if index != -1 else self.fly_time
+        return next((i for i, val in self.suite if val < self.initial_value), self.fly_time)
 
     @property
     def max_alt(self) -> int:
@@ -27,7 +26,6 @@ class SyracuseSuite:
 
 
 class Syracuse:
-
     @staticmethod
     def _recursive(n: int, method: Method) -> List[int]:
         suite = [n]
@@ -42,4 +40,4 @@ class Syracuse:
     @staticmethod
     def generate_suite(n: int, method: Method = Method.NORMAL, inverse: bool = False) -> SyracuseSuite:
         suite = Syracuse._recursive(n, method)
-        return SyracuseSuite(suite, n)
+        return SyracuseSuite(suite)
