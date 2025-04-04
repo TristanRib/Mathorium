@@ -43,7 +43,3 @@ class PlotHelper:
         plt.legend()
         plt.tight_layout()
         plt.show()
-
-# Exemple d'utilisation
-# df = pd.DataFrame({'initial': range(1, 101), 'flyTime': some_data})
-# PlotHelper.plot_with_rolling_average(df, 'initial', 'flyTime')
