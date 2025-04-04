@@ -1,21 +1,16 @@
-class Syracuse:
-    """
-    Hypothèse mathématique selon laquelle la suite de Syracuse de n'importe quel entier strictement positif atteint 1.
-    """
-    def __init__(self, number: int):
-        self.number = number
-        self.suite: list[int] = []
+from enum import Enum
+from typing import List
 
-    def _recursive(self, n: int):
-        self.suite.append(n)
-        if n > 1:
-            next_n = n // 2 if n % 2 == 0 else n * 3 + 1
-            self._recursive(next_n)
 
-    def generate_suite(self) -> list[int]:
-        self.suite = []
-        self._recursive(self.number)
-        return self.suite
+class Method(Enum):
+    NORMAL = "normal"
+    COMPRESSED = "compressed"
+
+
+class SyracuseSuite:
+    def __init__(self, suite: List[int], initial_value: int):
+        self.suite = suite
+        self.initial_value = initial_value
 
     @property
     def fly_time(self) -> int:
@@ -23,11 +18,28 @@ class Syracuse:
 
     @property
     def alt_fly_time(self) -> int:
-        for i, val in enumerate(self.suite):
-            if val < self.number:
-                return i
-        return self.fly_time
+        index = next((i for i, val in enumerate(self.suite) if val < self.initial_value), -1)
+        return index if index != -1 else self.fly_time
 
     @property
     def max_alt(self) -> int:
         return max(self.suite)
+
+
+class Syracuse:
+
+    @staticmethod
+    def _recursive(n: int, method: Method) -> List[int]:
+        suite = [n]
+        while n > 1:
+            if method == Method.NORMAL:
+                n = n // 2 if n % 2 == 0 else n * 3 + 1
+            elif method == Method.COMPRESSED:
+                n = n // 2 if n % 2 == 0 else (n * 3 + 1) // 2
+            suite.append(n)
+        return suite
+
+    @staticmethod
+    def generate_suite(n: int, method: Method = Method.NORMAL, inverse: bool = False) -> SyracuseSuite:
+        suite = Syracuse._recursive(n, method)
+        return SyracuseSuite(suite, n)
