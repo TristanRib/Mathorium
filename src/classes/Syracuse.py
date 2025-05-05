@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import List
 
 
 class Method(Enum):
@@ -8,7 +7,7 @@ class Method(Enum):
 
 
 class SyracuseSuite:
-    def __init__(self, suite: List[int]):
+    def __init__(self, suite: list[int]):
         self.suite = suite
         self.initial_value = suite[0]
 
@@ -18,7 +17,7 @@ class SyracuseSuite:
 
     @property
     def alt_fly_time(self) -> int:
-        return next((i for i, val in self.suite if val < self.initial_value), self.fly_time)
+        return next((i for i, val in enumerate(self.suite) if val < self.initial_value), self.fly_time)
 
     @property
     def max_alt(self) -> int:
@@ -27,7 +26,7 @@ class SyracuseSuite:
 
 class Syracuse:
     @staticmethod
-    def _recursive(n: int, method: Method) -> List[int]:
+    def _recursive(n: int, method: Method) -> list[int]:
         suite = [n]
         while n > 1:
             if method == Method.NORMAL:
