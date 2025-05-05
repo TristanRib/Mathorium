@@ -5,10 +5,13 @@ from src.helpers.math_helper import MathHelper
 
 
 class Cell:
-    def __init__(self, position: tuple[float, float], radius: float = 3.0):
+    def __init__(self, position: tuple[float, float], radius: float = 3.0, signal_intensity=100):
         self.x, self.y = position
         self._radius = radius
         self._status = True
+
+        jitter = np.random.uniform(1 - 0.05, 1 + 0.05)
+        self._signal_intensity = signal_intensity * jitter
 
     @property
     def status(self):
@@ -27,6 +30,14 @@ class Cell:
         self.x, self.y = value
 
     @property
+    def signalIntensity(self):
+        return self._signal_intensity
+
+    @signalIntensity.setter
+    def signalIntensity(self, value):
+        self._signal_intensity = value
+
+    @property
     def radius(self) -> float:
         return self._radius
 
@@ -43,13 +54,29 @@ class Cell:
 
 class Glucose(Cell):
     def __init__(self, position: tuple[float, float]):
-        super().__init__(position)
+        super().__init__(position, radius=3.0, signal_intensity=150)
+
+
+class Lactose(Cell):
+    def __init__(self, position: tuple[float, float]):
+        super().__init__(position, radius=2.5, signal_intensity=80)
+
+
+class AminoAcid(Cell):
+    def __init__(self, position: tuple[float, float]):
+        super().__init__(position, radius=2.0, signal_intensity=60)
+
+
+class OxygenBubble(Cell):
+    def __init__(self, position: tuple[float, float]):
+        super().__init__(position, radius=2.5, signal_intensity=40)
 
 
 class Bacteria(Cell):
-    def __init__(self, position: tuple[float, float], nutrients: list[Type[Cell]]):
+    def __init__(self, position: tuple[float, float], nutrients: list[Type[Cell]], capture_factor: float = 1):
         super().__init__(position)
         self._nutrients = nutrients
+        self._capture_factor = capture_factor
 
     @property
     def nutrients(self) -> list[Type[Cell]]:
@@ -59,23 +86,38 @@ class Bacteria(Cell):
     def nutrients(self, value: list[Type[Cell]]):
         self._nutrients = value
 
+    def detect_signal(self, other_cell: Cell):
+        if not other_cell.status:  # Si la cellule est morte, on ignore son signal
+            return 0
+
+        distance = MathHelper.euclidean_distance(self.position, other_cell.position)
+
+        if distance == 0:
+            return float('inf')
+
+        signal_strength = other_cell.signalIntensity / (distance ** 2)
+        captured_signal = signal_strength * self._capture_factor
+
+        if captured_signal >= 0.1:
+            return captured_signal
+        return 0
+
     def move_hunt(self, neighbours: list[Cell]):
-        valid_targets = [
-            target for target in neighbours
-            if isinstance(target, tuple(self.nutrients)) and target.status
+        signals = [
+            (cell, self.detect_signal(cell))
+            for cell in neighbours
+            if cell != self and self.detect_signal(cell) > 0
         ]
 
-        if valid_targets:
-            closest_target = min(
-                valid_targets,
-                key=lambda target: MathHelper.euclidean_distance(self.position, target.position)
-            )
-
-            dx, dy = ChimeAttraction.delta(self, closest_target)
+        if signals:
+            target = max(signals, key=lambda x: x[1])[0]
+            dx, dy = ChimeAttraction.delta(self, target)
             self.position = (self.x + dx, self.y + dy)
 
-            if MathHelper.euclidean_distance(self.position, closest_target.position) < closest_target.radius:
-                closest_target.status = False
+            if MathHelper.euclidean_distance(self.position, target.position) < target.radius:
+                target.status = False
+        else:
+            self.move_random()
 
 
 class EscherichiaColy(Bacteria):
