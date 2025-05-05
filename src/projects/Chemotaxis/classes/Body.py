@@ -6,15 +6,15 @@ from src.projects.Chemotaxis.classes.Cell import Cell
 
 
 class Body:
-    def __init__(self, cell_specs: list[tuple[Type[Cell], int]], size: int = 100):
+    def __init__(self, cell_specs: list[tuple[Type[Cell], int]], size: int = 256):
         self._size = size
 
         self._cells: dict[Cell, tuple[float, float]] = {}
 
         for cell_class, count in cell_specs:
             for _ in range(count):
-                x = np.random.uniform(-size, size)
-                y = np.random.uniform(-size, size)
+                x = np.random.uniform(-size / 2, size / 2)
+                y = np.random.uniform(-size / 2, size / 2)
                 cell = cell_class()
                 self._cells[cell] = (x, y)
                 cell.body = self

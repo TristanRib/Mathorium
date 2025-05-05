@@ -1,7 +1,7 @@
 from typing import Type
 
 from src.helpers.math_helper import MathHelper
-from src.projects.Chemotaxis.classes.Cell import Cell, Glucose
+from src.projects.Chemotaxis.classes.Cell import Cell, Glucose, AminoAcid, OxygenBubble
 from src.projects.Chemotaxis.classes.Chemotaxis import ChimeAttraction
 
 
@@ -39,9 +39,14 @@ class Bacteria(Cell):
             for cell in self._body.cells
             if cell != self and self.detect_signal(cell) > 0
         ]
+        nutrient_signals = [
+            (cell, signal)
+            for cell, signal in signals
+            if isinstance(cell, tuple(self.nutrients))
+        ]
 
-        if signals:
-            target = max(signals, key=lambda x: x[1])[0]
+        if nutrient_signals:
+            target = max(nutrient_signals, key=lambda x: x[1])[0]
             dx, dy = ChimeAttraction.delta(self, target)
             self._body.update_position(self, (dx, dy))
 
@@ -54,4 +59,4 @@ class Bacteria(Cell):
 
 class EscherichiaColy(Bacteria):
     def __init__(self):
-        super().__init__([Glucose])
+        super().__init__([Glucose, AminoAcid, OxygenBubble])
