@@ -6,6 +6,7 @@ class Cell:
         self._body = None
         self._radius = radius
         self._status = True
+        # On met une petite imprécision sur les signaux pour de l'aléatoire
         self._signal_intensity = signal_intensity * np.random.uniform(1 - signal_jitter, 1 + signal_jitter)
 
     @property

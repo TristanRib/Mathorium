@@ -1,5 +1,6 @@
-import numpy as np
 from typing import Type
+
+import numpy as np
 
 from src.projects.Chemotaxis.classes.Bacteria import Bacteria
 from src.projects.Chemotaxis.classes.Cell import Cell
@@ -11,6 +12,7 @@ class Body:
 
         self._cells: dict[Cell, tuple[float, float]] = {}
 
+        # Pour chaque classe de cellule, on lui assigne des coordonnées aléatoires et on lui signale le body qu'elle habite
         for cell_class, count in cell_specs:
             for _ in range(count):
                 x = np.random.uniform(-size / 2, size / 2)
@@ -37,11 +39,14 @@ class Body:
     def update_position(self, cell, delta):
         current_x, current_y = self.cells[cell]
         dx, dy = delta
-        new_x = max(-self._size, min(self._size, current_x + dx))
-        new_y = max(-self._size, min(self._size, current_y + dy))
+
+        # Bornes pour limiter le déplacement des cellules
+        new_x = max(-self._size / 2, min(self._size / 2, current_x + dx))
+        new_y = max(-self._size / 2, min(self._size / 2, current_y + dy))
         self.cells[cell] = (new_x, new_y)
 
     def chemotaxis(self, t=42):
+        # On copie le dictionnaire cells mais veut des listes de tuple à la place de tuple pour les positions
         positions = {cell: [self.get_position(cell)] for cell in self.cells}
 
         for i in range(t):

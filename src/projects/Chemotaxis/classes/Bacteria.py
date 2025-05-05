@@ -34,11 +34,13 @@ class Bacteria(Cell):
         return captured_signal
 
     def move_hunt(self):
+        # On capte tous les signaux des autres cellules du corps
         signals = [
             (cell, self.detect_signal(cell))
             for cell in self._body.cells
             if cell != self and self.detect_signal(cell) > 0
         ]
+        # On trie pour les signaux des cellules que l'on chasse
         nutrient_signals = [
             (cell, signal)
             for cell, signal in signals
@@ -50,6 +52,7 @@ class Bacteria(Cell):
             dx, dy = ChimeAttraction.delta(self, target)
             self._body.update_position(self, (dx, dy))
 
+            # On tue la cellule si on l'attrape
             if MathHelper.euclidean_distance(self._body.get_position(self),
                                              self._body.get_position(target)) < target.radius:
                 target.status = False
