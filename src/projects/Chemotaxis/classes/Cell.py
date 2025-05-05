@@ -2,10 +2,12 @@ import numpy as np
 
 
 class Cell:
-    def __init__(self, radius: float = 3.0, signal_intensity=100, signal_jitter=0.05):
+    def __init__(self, radius: float = 3.0, speed: float = 1.0, signal_intensity: float = 100,
+                 signal_jitter: float = 0.05):
         self._body = None
         self._radius = radius
         self._status = True
+        self._speed = speed
         # On met une petite imprécision sur les signaux pour de l'aléatoire
         self._signal_intensity = signal_intensity * np.random.uniform(1 - signal_jitter, 1 + signal_jitter)
 
@@ -41,16 +43,16 @@ class Cell:
     def radius(self, value) -> None:
         self._radius = value
 
-    def move_random(self, step=1) -> None:
+    def move_random(self) -> None:
         angle = np.random.uniform(0, 2 * np.pi)
-        dx = step * np.cos(angle)
-        dy = step * np.sin(angle)
+        dx = self._speed * np.cos(angle)
+        dy = self._speed * np.sin(angle)
         self._body.update_position(self, (dx, dy))
 
 
 class Glucose(Cell):
     def __init__(self):
-        super().__init__(radius=3.0, signal_intensity=150)
+        super().__init__(radius=3.0, speed=2, signal_intensity=150)
 
 
 class Lactose(Cell):
@@ -65,4 +67,4 @@ class AminoAcid(Cell):
 
 class OxygenBubble(Cell):
     def __init__(self):
-        super().__init__(radius=2.5, signal_intensity=40)
+        super().__init__(radius=2.5, speed=0.7, signal_intensity=40)
