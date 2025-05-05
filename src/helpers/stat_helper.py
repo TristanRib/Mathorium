@@ -1,16 +1,16 @@
-from typing import List, Dict
 import math
+
 
 class StatHelper:
 
     @staticmethod
-    def mean(arr: List[float]) -> float:
+    def mean(arr: list[float]) -> float:
         if not arr:
             return float('nan')
         return sum(arr) / len(arr)
 
     @staticmethod
-    def stddev(arr: List[float]) -> float:
+    def stddev(arr: list[float]) -> float:
         if not arr:
             return float('nan')
         avg = StatHelper.mean(arr)
@@ -18,7 +18,7 @@ class StatHelper:
         return math.sqrt(variance)
 
     @staticmethod
-    def quantile(arr: List[float], q: float) -> float:
+    def quantile(arr: list[float], q: float) -> float:
         if not 0 <= q <= 1:
             raise ValueError("Le quantile doit être entre 0 et 1.")
         if not arr:
@@ -34,7 +34,7 @@ class StatHelper:
         return (sorted_arr[lower] + sorted_arr[upper]) / 2
 
     @staticmethod
-    def calculate_stats(arr: List[float]) -> Dict[str, float]:
+    def calculate_stats(arr: list[float]) -> dict[str, float]:
         return {
             "mean": StatHelper.mean(arr),
             "stddev": StatHelper.stddev(arr),
