@@ -34,10 +34,10 @@ class Body:
         self._cells = value
 
     def get_position(self, cell):
-        return self.cells[cell]
+        return self._cells[cell]
 
     def update_position(self, cell, delta):
-        current_x, current_y = self.cells[cell]
+        current_x, current_y = self._cells[cell]
         dx, dy = delta
 
         # Bornes pour limiter le déplacement des cellules
